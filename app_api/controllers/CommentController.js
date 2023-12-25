@@ -31,14 +31,14 @@ const getComment= async function(req,res){
             var response, comment;
             if(!venue){
                 createResponse(res,404,{
-                    status:"venue:id bulunamadı",
+                    status:"venueid bulunamadı",
                 });
                 return;
             } else if(venue.comments && venue.comments.length > 0){
                 comment=venue.comments.id(req.params.commentid);
                 if(!comment){
                     createResponse(res,404,{
-                        status:"commment:id bulunamadı",
+                        status:"commmentid bulunamadı",
                     });
                 }else {
                     response={
@@ -59,7 +59,7 @@ const getComment= async function(req,res){
         });
     }catch (error){
         createResponse(res,404,{
-            status:"venue:id bulunamadı",
+            status:"venueid bulunamadı",
         });  
     }
 };
