@@ -80,7 +80,7 @@ const addVenue = async (req, res) => {
 
 const getVenue = async function (req, res) {
     try {
-        await Venue.findById(req.params.venueid).exec().then(function () {
+        await Venue.findById(req.params.venueid).exec().then(function (venue) {
             createResponse(res, 200, venue);
         });
     } catch (error) {
