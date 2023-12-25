@@ -20,23 +20,18 @@ var converter = (function () {
 })();
 
 const listVenues = async function (req, res) {
+    var lat = parseFloat(req.query.lat);
+    var long = parseFloat(req.query.long);
+
+    var point = {
+        type: "Point",
+        coordinates: [lat, long],
+    };
+    var geoOptions = {
+        distanceField: "dis",
+        spherical: true,
+    };
     try {
-        var lat = parseFloat(req.query.lat);
-        var long = parseFloat(req.query.long);
-
-        if (isNaN(lat) || isNaN(long)) {
-            throw new Error("Latitude and longitude are required and must be valid numbers.");
-        }
-
-        var point = {
-            type: "Point",
-            coordinates: [lat, long],
-        };
-        var geoOptions = {
-            distanceField: "dis",
-            spherical: true,
-        };
-
         const result = await Venue.aggregate([
             {
                 $geoNear: {
@@ -58,43 +53,48 @@ const listVenues = async function (req, res) {
         });
         createResponse(res, 200, venues);
     } catch (e) {
-        createResponse(res, 400, { status: e.message });
+        createResponse(res, 404, {
+            status: "Enlem ve Boylam zorunlu ve sifirdan farkli olmali",
+        });
     }
 }
 
 const addVenue = async (req, res) => {
-    const newVenue = new Venue({
+
+    const newVenue = {
         name: req.body.name,
         address: req.body.address,
         rating: req.body.rating,
         foodanddrink: req.body.foodanddrink,
         coordinates: req.body.coordinates,
         hours: req.body.hours,
-    });
+    };
 
     try {
-        await newVenue.save();
-        createResponse(res, 201, newVenue);
+        await venue.collection.insertOne(newVenue);
+        createResponse(res, 200, newVenue);
     } catch (error) {
-        createResponse(res, 500, { status: "Error adding venue." });
+        createResponse(res, 404, { status: "Mekan Eklenmedi..." });
     }
 };
 
 const getVenue = async function (req, res) {
     try {
-        const venue = await Venue.findById(req.params.venueid).exec();
-        createResponse(res, 200, venue);
+        await Venue.findById(req.params.venueid).exec().then(function (venue) {
+            createResponse(res, 200, venue);
+        });
     } catch (error) {
-        createResponse(res, 404, { status: "Venue not found." });
+        createResponse(res, 404, { status: "Boyle bir mekan yok!" });
     }
+    //createResponse(res, 200, {status: "Basarili"});
 }
 
 const updateVenue = function (req, res) {
-    createResponse(res, 200, { status: "Successful" });
+    createResponse(res, 200, { status: "Basarili" });
 }
 
 const deleteVenue = function (req, res) {
-    createResponse(res, 200, { status: "Successful" });
+    createResponse(res, 200, { status: "Basarili" });
 }
 
 module.exports = {
