@@ -1,5 +1,5 @@
 var mongoose = require("mongoose");
-var venue = mongoose.model("venue");
+var Venue = mongoose.model("venue");
 
 const createResponse = function (res, status, content) {
     res.status(status).json(content);
