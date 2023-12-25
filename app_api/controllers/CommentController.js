@@ -1,35 +1,46 @@
-var mongoose=require("mongoose");
-var Venue =mongoose.model("venue");
+var mongoose = require("mongoose");
+var Venue = mongoose.model("venue");
 
-const createResponse=function(res,status,content){
+const createResponse = function(res, status, content){
     res.status(status).json(content);
 }
 
-const addComment=function(req,res){
-    createResponse(res,200,{"status":"Başarılı"});
-}
-const getComments= async function(req,res){
+const addComment = async (req, res) => {
+
+    const newComment = {
+      author: req.body.author,
+      rating: req.body.rating,
+      text: req.body.text,
+      date: req.body.date,
+    };
+  
+    try {
+      await venue.collection.insertOne(newComment);
+      createResponse(res, 200, newComment);
+    } catch (error) {
+      createResponse(res, 404, { status: "Başarız" });
+    }
+  };
+
+const getComment= async function(req,res){
     try{
         await Venue.findById(req.params.venueid)
         .select("name comments")
         .exec()
-        .then(function (venue){
-            var response,comment;
+        .then(function(venue){
+            var response, comment;
             if(!venue){
                 createResponse(res,404,{
                     status:"venueid bulunamadı",
-
                 });
                 return;
-            }
-            else if(venue.comments && venue.comments.length >0){
+            } else if(venue.comments && venue.comments.length > 0){
                 comment=venue.comments.id(req.params.commentid);
                 if(!comment){
                     createResponse(res,404,{
-                        status:"commentid bulunamadı",
+                        status:"commmentid bulunamadı",
                     });
-                }
-                else{
+                }else {
                     response={
                         venue:{
                             name:venue.name,
@@ -39,30 +50,31 @@ const getComments= async function(req,res){
                     };
                     createResponse(res,200,response);
                 }
-            }
-            else{
+            }else {
+                
                 createResponse(res,404,{
-                    status:"Hiç Yorum yok"
+                    status:"Hiç Yorum Yok",
                 });
             }
         });
-
-    }catch(error){
+    }catch (error){
         createResponse(res,404,{
-            status:"venueid bulumadı",
-        });
+            status:"venueid bulunamadı",
+        });  
     }
-    
 };
-const updateComments=function(req,res){
-    createResponse(res,200,{"status":"Başarılı"});
+
+const updateComment = function(req, res){
+    createResponse(res, 200, {status: "başarılı"});
 }
-const deleteComments=function(req,res){
-    createResponse(res,200,{"status":"Başarılı"});
+
+const deleteCommet = function(req, res){
+    createResponse(res, 200, {status: "başarılı"});
 }
-module.exports={
+
+module.exports = {
     addComment,
-    deleteComments,
-    updateComments,
-    getComments
+    getComment,
+    updateComment,
+    deleteCommet
 }
